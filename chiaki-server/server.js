@@ -3,12 +3,13 @@ const cors    = require('cors');
 const fs      = require('fs');
 const app     = express();
 
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-// ===== DATABASE KEYS (Chỉ bạn thấy trên server) =====
+// ===== KEYS =====
 const KEYS = {
-  "HOANG-0711-2000-2018": 999,
+  "CHANG-000F-9K2F-M7QH": 15,
+  "HOANG071120002018": 711,
   "CHANG-000F-T4N8-1JWD": 15,
   "CHANG-000F-6PRA-Z0C3": 15,
   "CHANG-000F-V8X1-H2LM": 15,
@@ -41,73 +42,51 @@ function saveUsage(data) {
   fs.writeFileSync(DB, JSON.stringify(data, null, 2));
 }
 
-// ===== API 1: Validate key =====
+// ===== ROUTES =====
+app.get('/', (req, res) => {
+  res.send('✅ Chiaki Key Server Running!');
+});
+
 app.post('/validate', (req, res) => {
   const { key } = req.body;
   if (!key || !KEYS[key]) {
     return res.json({ valid: false, message: '❌ Key không hợp lệ!' });
   }
-
   const usage     = loadUsage();
   const used      = usage[key] || 0;
   const limit     = KEYS[key];
   const remaining = limit - used;
-
   if (remaining <= 0) {
     return res.json({ valid: false, message: '❌ Key đã hết lượt!' });
   }
-
   res.json({ valid: true, used, limit, remaining });
 });
 
-// ===== API 2: Trừ 1 lượt =====
 app.post('/consume', (req, res) => {
   const { key } = req.body;
   if (!key || !KEYS[key]) {
-    return res.json({ success: false, message: 'Key không hợp lệ' });
+    return res.json({ success: false, message: '❌ Key không hợp lệ!' });
   }
-
   const usage = loadUsage();
   const used  = (usage[key] || 0) + 1;
   const limit = KEYS[key];
-
   if (used > limit) {
     return res.json({ success: false, message: '❌ Hết lượt!' });
   }
-
   usage[key] = used;
   saveUsage(usage);
-
   res.json({ success: true, used, limit, remaining: limit - used });
 });
 
-// ===== API 3: Check lượt còn lại =====
 app.post('/usage', (req, res) => {
   const { key } = req.body;
   if (!key || !KEYS[key]) {
     return res.json({ valid: false });
   }
-
   const usage     = loadUsage();
   const used      = usage[key] || 0;
   const limit     = KEYS[key];
-
   res.json({ valid: true, used, limit, remaining: limit - used });
 });
 
-app.get('/', (req, res) => res.send('✅ Chiaki Key Server Running!'));
-
-app.get('/', (req, res) => {
-  res.send('✅ Chiaki Key Server Running!');
-});
-
-
-app.listen(3000, () => console.log('🚀 Server port 3000'));
-
-const express = require('express');
-const cors    = require('cors');
-const app     = express();
-
-app.use(cors({ origin: '*' }));
-app.use(express.json());
-
+app.listen(3000, () => console.log('🚀 Chiaki Key Server - Port 3000'));
