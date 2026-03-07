@@ -97,6 +97,11 @@ app.post('/usage', (req, res) => {
 
 app.get('/', (req, res) => res.send('✅ Chiaki Key Server Running!'));
 
+app.get('/', (req, res) => {
+  res.send('✅ Chiaki Key Server Running!');
+});
+
+
 app.listen(3000, () => console.log('🚀 Server port 3000'));
 
 const express = require('express');
