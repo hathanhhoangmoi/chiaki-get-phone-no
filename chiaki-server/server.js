@@ -98,3 +98,16 @@ app.post('/usage', (req, res) => {
 app.get('/', (req, res) => res.send('✅ Chiaki Key Server Running!'));
 
 app.listen(3000, () => console.log('🚀 Server port 3000'));
+
+const express = require('express');
+const cors    = require('cors');
+const app     = express();
+
+// Fix CORS cho Chrome Extension
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
+
+app.use(express.json());
