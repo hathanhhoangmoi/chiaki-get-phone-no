@@ -103,11 +103,6 @@ const express = require('express');
 const cors    = require('cors');
 const app     = express();
 
-// Fix CORS cho Chrome Extension
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
-}));
-
+app.use(cors({ origin: '*' }));
 app.use(express.json());
+
