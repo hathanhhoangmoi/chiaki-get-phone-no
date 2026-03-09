@@ -29,6 +29,7 @@ const KEYS = {
   "CHANG-000F-F7X2-3LKP": 15,
   "CHANG-000F-N4YA-6T0W": 15,
   "CHANG-000F-S1M8-Q5DZ": 15
+  "THCOSMETIC1000KEY": 1000
 };
 
 const DB = './usage.json';
